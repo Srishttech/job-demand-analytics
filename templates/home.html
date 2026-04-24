@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Demand Analytics</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-brand">Job Demand Analytics</div>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/dashboard">Dashboard</a>
+      <a href="/upload">Upload Data</a>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <h1>Explore Job Market Trends</h1>
+    <p>Upload any jobs CSV and instantly see skill demand, salary trends, and location insights.</p>
+    <div class="hero-btns">
+      <a href="/dashboard" class="btn-primary">View Dashboard</a>
+      <a href="/upload" class="btn-secondary">Upload CSV</a>
+    </div>
+  </div>
+
+  <div class="features">
+    <div class="feature-card">
+      <div class="feature-icon">&#9673;</div>
+      <h3>Skill Demand Charts</h3>
+      <p>See which skills are most in-demand across job listings</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">&#9673;</div>
+      <h3>Salary Analysis</h3>
+      <p>Compare salary ranges by role, location, and company</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">&#9673;</div>
+      <h3>Location Insights</h3>
+      <p>Discover where the most opportunities are concentrated</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">&#9673;</div>
+      <h3>Upload Your Data</h3>
+      <p>Works with any CSV — Kaggle datasets, LinkedIn exports, and more</p>
+    </div>
+  </div>
+
+</body>
+</html>

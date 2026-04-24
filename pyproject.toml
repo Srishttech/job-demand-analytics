@@ -1,0 +1,20 @@
+[project]
+name = "crproject"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "db-dtypes==1.2.0",
+    "flask==3.0.0",
+    "google-cloud-bigquery==3.14.1",
+    "google-cloud-bigquery-storage==2.24.0",
+    "gunicorn==21.2.0",
+    "matplotlib==3.8.2",
+    "mysql-connector-python==8.2.0",
+    "pandas==2.1.4",
+    "pandas-gbq==0.21.0",
+    "pyarrow==14.0.1",
+    "sqlalchemy==2.0.23",
+    "werkzeug==3.0.1",
+]

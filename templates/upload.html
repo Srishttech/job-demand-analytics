@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload Data — Job Demand Analytics</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-brand">Job Demand Analytics</div>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/dashboard">Dashboard</a>
+      <a href="/upload" class="active">Upload Data</a>
+    </div>
+  </nav>
+
+  <div class="page-content">
+    <h2 class="page-title">Upload CSV</h2>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }}">{{ message }}</div>
+    {% endfor %}
+    <div style="margin-bottom: 1rem;">
+      <a href="/dashboard" class="btn-primary">View Dashboard →</a>
+    </div>
+  {% endif %}
+{% endwith %}
+
+    <div class="upload-card">
+      <form method="POST" enctype="multipart/form-data" class="upload-form">
+        <div class="upload-area">
+          <div class="upload-icon">&#8679;</div>
+          <p class="upload-text">Choose a CSV file to upload</p>
+          <input type="file" name="csv_file" accept=".csv" required>
+        </div>
+
+        <div class="csv-format">
+          <p class="format-title">Expected CSV columns:</p>
+          <div class="col-tags">
+            <span class="col-tag required">title</span>
+            <span class="col-tag required">skills</span>
+            <span class="col-tag required">location</span>
+            <span class="col-tag optional">salary</span>
+            <span class="col-tag optional">company</span>
+            <span class="col-tag optional">job_type</span>
+            <span class="col-tag optional">posted_month</span>
+          </div>
+          <p class="format-note">Skills should be separated by semicolons e.g. <code>Python;SQL;ML</code></p>
+        </div>
+
+        <button type="submit" class="btn-primary full-width">Upload and Load Data</button>
+      </form>
+
+      <div class="or-divider">or</div>
+
+      <form action="/upload" method="POST">
+        <input type="hidden" name="use_sample" value="1">
+        <button type="submit" class="btn-secondary full-width"
+          onclick="this.form.action='/load-sample'">
+          Use sample dataset (35 jobs included)
+        </button>
+      </form>
+    </div>
+  </div>
+
+</body>
+</html>

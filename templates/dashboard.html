@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Job Demand Analytics</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+  <nav class="navbar">
+    <div class="nav-brand">Job Demand Analytics</div>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/dashboard" class="active">Dashboard</a>
+      <a href="/upload">Upload Data</a>
+    </div>
+  </nav>
+
+  <div class="page-content">
+
+    <div class="page-header">
+      <h2 class="page-title">Dashboard</h2>
+      <a href="/upload" class="btn-secondary">Upload new CSV</a>
+    </div>
+
+    {% if error %}
+      <div class="alert alert-error">{{ error }}</div>
+    {% endif %}
+
+    {% if stats %}
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-label">Total Jobs</div>
+        <div class="stat-value">{{ stats.total_jobs }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Locations</div>
+        <div class="stat-value">{{ stats.total_locations }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Companies</div>
+        <div class="stat-value">{{ stats.total_companies }}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Avg Salary</div>
+        <div class="stat-value">{{ stats.avg_salary_lpa }} LPA</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Top Location</div>
+        <div class="stat-value small">{{ stats.top_location }}</div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <div class="filter-group">
+        <label class="filter-label">Location</label>
+        <select class="filter-select" id="locationFilter" onchange="applyFilters()">
+          <option value="all">All Locations</option>
+          {% for loc in locations %}
+            <option value="{{ loc }}" {% if selected_location == loc %}selected{% endif %}>{{ loc }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label">Job Type</label>
+        <select class="filter-select" id="jobTypeFilter" onchange="applyFilters()">
+          <option value="all">All Types</option>
+          {% for jt in job_types %}
+            <option value="{{ jt }}" {% if selected_job_type == jt %}selected{% endif %}>{{ jt }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="filter-group search-group">
+        <label class="filter-label">Search Skill</label>
+        <div class="search-wrap">
+          <input type="text" class="search-input" id="skillSearch"
+                 placeholder="e.g. Python, ML, Docker..."
+                 value="{{ search_skill or '' }}"
+                 onkeydown="if(event.key==='Enter') applyFilters()">
+          <button class="search-btn" onclick="applyFilters()">Search</button>
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label class="filter-label">&nbsp;</label>
+        <a href="/dashboard" class="btn-reset">Reset</a>
+      </div>
+    </div>
+
+    <!-- Filter Results Table -->
+    {% if filtered_jobs is not none %}
+    <div class="results-section">
+      <div class="results-header">
+        <span class="results-count">{{ filtered_jobs|length }} jobs found</span>
+        {% if search_skill %}
+          <span class="results-tag">Skill: <strong>{{ search_skill }}</strong></span>
+        {% endif %}
+        {% if selected_location != 'all' %}
+          <span class="results-tag">Location: <strong>{{ selected_location }}</strong></span>
+        {% endif %}
+      </div>
+
+      {% if filtered_jobs %}
+      <div class="job-table-wrap">
+        <table class="job-table">
+          <thead>
+            <tr>
+              <th>Job Title</th>
+              <th>Company</th>
+              <th>Location</th>
+              <th>Skills</th>
+              <th>Salary</th>
+              <th>Type</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for job in filtered_jobs %}
+            <tr>
+              <td class="job-title-cell">{{ job.title }}</td>
+              <td>{{ job.company }}</td>
+              <td><span class="loc-badge">{{ job.location }}</span></td>
+              <td>
+                <div class="skill-tags">
+                  {% for skill in job.skills.split(';')[:3] %}
+                    <span class="skill-tag">{{ skill.strip() }}</span>
+                  {% endfor %}
+                  {% if job.skills.split(';')|length > 3 %}
+                    <span class="skill-tag more">+{{ job.skills.split(';')|length - 3 }}</span>
+                  {% endif %}
+                </div>
+              </td>
+              <td class="salary-cell">
+                {% if job.salary > 0 %}
+                  ₹{{ "%.1f"|format(job.salary/100000) }} LPA
+                {% else %}—{% endif %}
+              </td>
+              <td>{{ job.job_type }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+        <div class="no-results">No jobs found. Try a different filter.</div>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Charts -->
+    {% if charts_ok %}
+    <div class="charts-section-title">Analytics Charts</div>
+    <div class="charts-grid">
+      <div class="chart-card wide">
+        <h3 class="chart-title">Top 10 In-Demand Skills</h3>
+        <img src="{{ url_for('static', filename='charts/skills.png') }}?v={{ cache_bust }}" alt="Skills" width="100%">
+      </div>
+      <div class="chart-card">
+        <h3 class="chart-title">Jobs by Location</h3>
+        <img src="{{ url_for('static', filename='charts/locations.png') }}?v={{ cache_bust }}" alt="Locations" width="100%">
+      </div>
+      <div class="chart-card">
+        <h3 class="chart-title">Salary Distribution</h3>
+        <img src="{{ url_for('static', filename='charts/salary.png') }}?v={{ cache_bust }}" alt="Salary" width="100%">
+      </div>
+      <div class="chart-card wide">
+        <h3 class="chart-title">Monthly Job Postings Trend</h3>
+        <img src="{{ url_for('static', filename='charts/trend.png') }}?v={{ cache_bust }}" alt="Trend" width="100%">
+      </div>
+      <div class="chart-card wide">
+        <h3 class="chart-title">Top Companies Hiring</h3>
+        <img src="{{ url_for('static', filename='charts/companies.png') }}?v={{ cache_bust }}" alt="Companies" width="100%">
+      </div>
+    </div>
+    {% else %}
+      <div class="charts-placeholder">
+        <p>No data yet — upload a CSV to generate charts.</p>
+        <a href="/upload" class="btn-primary">Upload CSV</a>
+      </div>
+    {% endif %}
+
+  </div>
+
+  <script>
+    function applyFilters() {
+      const loc   = document.getElementById('locationFilter').value;
+      const jtype = document.getElementById('jobTypeFilter').value;
+      const skill = document.getElementById('skillSearch').value.trim();
+      const params = new URLSearchParams();
+      if (loc   !== 'all') params.set('location', loc);
+      if (jtype !== 'all') params.set('job_type', jtype);
+      if (skill)           params.set('skill', skill);
+      window.location.href = '/dashboard?' + params.toString();
+    }
+  </script>
+
+</body>
+</html>

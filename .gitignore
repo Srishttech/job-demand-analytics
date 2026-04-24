@@ -1,0 +1,6 @@
+bigquery_key.json
+static/charts/*.png
+__pycache__/
+*.pyc
+.env
+data/
